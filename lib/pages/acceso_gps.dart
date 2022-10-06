@@ -37,6 +37,7 @@ class _AccesoGpsPageState extends State<AccesoGpsPage> {
   }
 
   void accesoGPS(PermissionStatus status) {
+    print(status);
     switch (status) {
       case PermissionStatus.denied:
       case PermissionStatus.permanentlyDenied:
