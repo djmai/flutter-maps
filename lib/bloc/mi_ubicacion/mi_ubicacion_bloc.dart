@@ -36,33 +36,33 @@ class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
     _positionSubscription?.cancel();
   }
 
-  @override
-  void onEvent(MiUbicacionEvent event) {
-    super.onEvent(event);
-    print('onEvent');
-    print(event);
-  }
-
-  @override
-  void onChange(Change<MiUbicacionState> change) {
-    super.onChange(change);
-    print('onChange');
-    print(change);
-  }
-
-  @override
-  void onTransition(Transition<MiUbicacionEvent, MiUbicacionState> transition) {
-    super.onTransition(transition);
-    print('onTransition');
-    print(transition);
-  }
-
-  @override
-  void onError(Object error, StackTrace stackTrace) {
-    print('onError');
-    print('$error, $stackTrace');
-    super.onError(error, stackTrace);
-  }
+  // @override
+  // void onEvent(MiUbicacionEvent event) {
+  //   super.onEvent(event);
+  //   print('onEvent');
+  //   print(event);
+  // }
+  //
+  // @override
+  // void onChange(Change<MiUbicacionState> change) {
+  //   super.onChange(change);
+  //   print('onChange');
+  //   print(change);
+  // }
+  //
+  // @override
+  // void onTransition(Transition<MiUbicacionEvent, MiUbicacionState> transition) {
+  //   super.onTransition(transition);
+  //   print('onTransition');
+  //   print(transition);
+  // }
+  //
+  // @override
+  // void onError(Object error, StackTrace stackTrace) {
+  //   print('onError');
+  //   print('$error, $stackTrace');
+  //   super.onError(error, stackTrace);
+  // }
 
   ubicacionCambio(MiUbicacionEvent event) {
     if (event is OnUbicacionCambio) {
