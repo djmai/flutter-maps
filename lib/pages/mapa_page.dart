@@ -36,6 +36,8 @@ class _MapaPageState extends State<MapaPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           BtnUbicacion(),
+          BtnSeguirUbicacion(),
+          BtnMiRuta(),
         ],
       ),
     );
@@ -43,9 +45,9 @@ class _MapaPageState extends State<MapaPage> {
 
   Widget crearMapa(MiUbicacionState state) {
     if (!state.existeUbicacion) return Text('Ubicando...');
-    // return Text('${state.ubicacion!.latitude}, ${state.ubicacion!.longitude}');
 
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+    mapaBloc.add(OnNuevaUbicacion(state.ubicacion!));
 
     final cameraPosition = CameraPosition(target: state.ubicacion!, zoom: 15);
 
@@ -55,6 +57,10 @@ class _MapaPageState extends State<MapaPage> {
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       onMapCreated: mapaBloc.initMapa,
+      polylines: mapaBloc.state.polylines.values.toSet(),
+      onCameraMove: (cameraPosition) {
+        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+      },
     );
   }
 }
