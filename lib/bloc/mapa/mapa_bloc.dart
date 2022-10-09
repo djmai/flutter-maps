@@ -14,24 +14,29 @@ part 'mapa_state.dart';
 
 class MapaBloc extends Bloc<MapaEvent, MapaState> {
   MapaBloc() : super(MapaState()) {
-    // on<OnNuevaUbicacion>((event, emit) => _onNuevaUbicacion(event));
-    // on<OnMarcarRecorrido>((event, emit) => _onMarcarRecorrido(event));
-    // on<OnSeguirUbicacion>((event, emit) => _onSeguirUbicacion(event));
     on<OnMapaListo>((event, emit) => emit(state.copyWith(mapaListo: true)));
     on<OnNuevaUbicacion>(_onNuevaUbicacion);
     on<OnMarcarRecorrido>(_onMarcarRecorrido);
     on<OnSeguirUbicacion>(_onSeguirUbicacion);
     on<OnMovioMapa>(_onMovioMapa);
+    on<OnCrearRutaInicioDestino>(_onCrearRutaInicioDestino);
   }
 
   // Controlador del mapa
   GoogleMapController? _mapController;
 
-  // Polylines
+  // Polyline Ruta
   Polyline _miRuta = Polyline(
     polylineId: PolylineId('mi_ruta'),
     color: Colors.transparent,
-    width: 4,
+    width: 3,
+  );
+
+  // Polyline Ruta Destino
+  Polyline _miRutaDestino = Polyline(
+    polylineId: PolylineId('mi_ruta_destino'),
+    color: Colors.black87,
+    width: 3,
   );
 
   void initMapa(GoogleMapController controller) {
@@ -84,7 +89,20 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     emit(state.copyWith(seguirUbicacion: !state.seguirUbicacion));
   }
 
-  void _onMovioMapa(OnMovioMapa event, Emitter<MapaState> emit){
+  void _onMovioMapa(OnMovioMapa event, Emitter<MapaState> emit) {
     emit(state.copyWith(ubicacionCentral: event.centroMapa));
+  }
+
+  void _onCrearRutaInicioDestino(
+      OnCrearRutaInicioDestino event, Emitter<MapaState> emit) {
+    _miRutaDestino = _miRutaDestino.copyWith(pointsParam: event.rutaCoordenadas);
+
+    final currentPolylines = state.polylines;
+    currentPolylines['mi_ruta_destino'] = _miRutaDestino;
+
+    emit(state.copyWith(
+      polylines: currentPolylines,
+      // TODO:  Marcadores
+    ));
   }
 }

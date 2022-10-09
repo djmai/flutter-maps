@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,16 +30,28 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-        builder: (_, state) => crearMapa(state),
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      body: Stack(
         children: [
-          BtnUbicacion(),
-          BtnSeguirUbicacion(),
-          BtnMiRuta(),
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+            builder: (_, state) => crearMapa(state),
+          ),
+          // TODO: hacer el toggle cuando estoy manualmente
+          Positioned(
+            top: 15,
+            child: SearchBar(),
+          ),
+          MarcadorManual(),
         ],
+      ),
+      floatingActionButton: FadeInRight(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            BtnUbicacion(),
+            BtnSeguirUbicacion(),
+            BtnMiRuta(),
+          ],
+        ),
       ),
     );
   }
@@ -49,17 +62,24 @@ class _MapaPageState extends State<MapaPage> {
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
     mapaBloc.add(OnNuevaUbicacion(state.ubicacion!));
 
-    final cameraPosition = CameraPosition(target: state.ubicacion!, zoom: 15);
-
-    return GoogleMap(
-      initialCameraPosition: cameraPosition,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      onMapCreated: mapaBloc.initMapa,
-      polylines: mapaBloc.state.polylines.values.toSet(),
-      onCameraMove: (cameraPosition) {
-        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+    final cameraPosition = CameraPosition(
+      target: state.ubicacion!,
+      zoom: 15,
+    );
+    
+    return BlocBuilder<MapaBloc, MapaState>(
+      builder: (context, _) {
+        return GoogleMap(
+          initialCameraPosition: cameraPosition,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          onMapCreated: mapaBloc.initMapa,
+          polylines: mapaBloc.state.polylines.values.toSet(),
+          onCameraMove: (cameraPosition) {
+            mapaBloc.add(OnMovioMapa(cameraPosition.target));
+          },
+        );
       },
     );
   }
