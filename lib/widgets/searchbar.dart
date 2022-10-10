@@ -29,9 +29,10 @@ class SearchBar extends StatelessWidget {
         child: GestureDetector(
           onTap: () async {
             final proximidad = context.read<MiUbicacionBloc>().state.ubicacion;
+            final historial = context.read<BusquedaBloc>().state.historial;
             final SearchResult? resultado = await showSearch(
               context: context,
-              delegate: SearchDestination(proximidad!),
+              delegate: SearchDestination(proximidad!, historial),
             );
             retornoBusqueda(context, resultado!);
           },
@@ -65,27 +66,40 @@ class SearchBar extends StatelessWidget {
 
     calculandoAlerta(context);
 
-    //  TODO: Calcular la ruta en base al valor: Result
+    // Calcular la ruta en base al valor: Result
     final trafficService = TrafficService();
     final mapaBloc = context.read<MapaBloc>();
 
     final inicio = context.read<MiUbicacionBloc>().state.ubicacion;
     final destino = result.destino;
 
+    // Obtener información del destino
+    final reverseQueryResponse =
+        await trafficService.getCoordenadasInfo(destino!);
+
     final drivingTraffic =
-        await trafficService.getCoordsInicioYFin(inicio!, destino!);
+        await trafficService.getCoordsInicioYFin(inicio!, destino);
 
     final geometry = drivingTraffic.routes![0].geometry;
     final duration = drivingTraffic.routes![0].duration;
     final distance = drivingTraffic.routes![0].distance;
+    final nombreDestino = reverseQueryResponse.features![0].text;
 
     final points = Poly.Polyline.Decode(encodedString: geometry, precision: 6);
     final List<LatLng> rutaCoordenadas = points.decodedCoords
         .map((points) => LatLng(points[0], points[1]))
         .toList();
 
-    mapaBloc.add(OnCrearRutaInicioDestino(rutaCoordenadas, distance!, duration!));
+    mapaBloc
+        .add(OnCrearRutaInicioDestino(rutaCoordenadas, distance!, duration!, nombreDestino!));
+
+    // Mover camara al destino
+    mapaBloc.moverCamara(destino);
 
     Navigator.of(context).pop();
+
+    //  Agregar al historial
+    final busquedaBloc = context.read<BusquedaBloc>();
+    busquedaBloc.add(OnAgregarHistorial(result));
   }
 }

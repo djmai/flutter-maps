@@ -12,3 +12,5 @@ import 'package:google_maps_flutter/google_maps_flutter.dart'
 part 'calculando_alerta.dart';
 
 part 'navegar_fadein.dart';
+
+part 'custom_image_markers.dart';
