@@ -118,5 +118,15 @@ class _BuildMarcadorManual extends StatelessWidget {
 
     Navigator.of(context).pop();
     context.read<BusquedaBloc>().add(OnDesactivarMarcadorManual());
+
+    //  Agregar al historial
+    final busquedaBloc = context.read<BusquedaBloc>();
+    final result = SearchResult(
+      cancelo: false,
+      destino: destino,
+      nombreDestino: nombreDestino,
+      descripcion: reverseQueryResponse.features![0].placeNameEs,
+    );
+    busquedaBloc.add(OnAgregarHistorial(result));
   }
 }
